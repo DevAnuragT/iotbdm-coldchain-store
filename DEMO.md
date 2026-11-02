@@ -8,7 +8,8 @@ timer — the clicks are fast, the risk is talking too long on the problem.
 
 ```
 cd IoTBDM
-docker compose up -d            # db, api, dashboard — wait for "healthy"
+docker compose up -d --build    # db, api, dashboard — wait for "healthy"
+                                # (--build: a stale api image serves old queries)
 # first time only, or if the volume is empty:
 docker compose --profile load run loader      # ~3 min, 500 shipments
 coldchain bench --compress                    # ~1 min; fills the Storage view's benchmark table

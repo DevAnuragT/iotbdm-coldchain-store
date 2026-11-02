@@ -11,6 +11,7 @@ trail records every rewrite caused by late-arriving data.
 - [PRD.md](PRD.md) — what we are building and why (requirements F1–F15, N1–N7,
   evaluation plan, risks).
 - [DEMO.md](DEMO.md) — what to show and say in the live demo, with fallbacks.
+- [reports/demo.mp4](reports/demo.mp4) — 3-minute narrated walkthrough of the dashboard (the five scenarios, in DEMO.md order).
 - `reports/` — benchmark tables and plots from the current dataset.
 
 ## Run it in 10 minutes
@@ -20,7 +21,7 @@ you want to hack on the dashboard.
 
 ```
 git clone <this repo> && cd IoTBDM
-docker compose up -d                          # TimescaleDB + API (:8000) + dashboard (:3100)
+docker compose up -d --build                  # TimescaleDB + API (:8000) + dashboard (:3100)
 docker compose --profile load run loader      # 500 shipments, ~3 min; SHIPMENTS=5000 for the full run
 
 # local Python, for the CLI, tests and benchmark
@@ -63,7 +64,7 @@ src/coldchain/
 dashboard/                 Vite + React + Recharts; nginx image proxies /api to the api service
 tests/                     engine unit tests (every late-data path), simulator properties,
                            100-shipment exit criteria (≤ 10 % ratio, 100 % recall)
-reports/                   benchmark-<run>.{md,json,png}, sensitivity.{json,png}
+reports/                   benchmark-<run>.{md,json,png}, sensitivity.{json,png}, demo.mp4
 ```
 
 Mapping to the PRD's team roles: simulator = `simulator/`; compaction engine
