@@ -1,0 +1,63 @@
+services:
+  db:
+    image: timescale/timescaledb:latest-pg16
+    environment:
+      POSTGRES_USER: coldchain
+      POSTGRES_PASSWORD: coldchain
+      POSTGRES_DB: coldchain
+    command: >
+      postgres -c shared_buffers=1GB -c work_mem=64MB -c max_wal_size=4GB
+               -c synchronous_commit=off -c timescaledb.max_background_workers=4
+    ports:
+      - "5432:5432"
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U coldchain -d coldchain"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build: .
+    command: coldchain api --host 0.0.0.0 --port 8000
+    environment:
+      COLDCHAIN_DSN: postgresql://coldchain:coldchain@db:5432/coldchain
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # Loads the demo dataset once, then exits. Re-run with `docker compose run loader`.
+  loader:
+    build: .
+    command: coldchain load --shipments ${SHIPMENTS:-500} --seed ${SEED:-42} --with-raw-store
+    environment:
+      COLDCHAIN_DSN: postgresql://coldchain:coldchain@db:5432/coldchain
+    depends_on:
+      db:
+        condition: service_healthy
+    profiles: ["load"]
+
+  dashboard:
+    build: ./dashboard
+    ports:
+      - "3100:80"
+    depends_on:
+      - api
+
+  # Optional real stream (F4). Start with: docker compose --profile kafka up
+  redpanda:
+    image: redpandadata/redpanda:v24.2.7
+    command:
+      - redpanda start --smp 1 --memory 1G --overprovisioned
+      - --kafka-addr PLAINTEXT://0.0.0.0:9092,OUTSIDE://0.0.0.0:19092
+      - --advertise-kafka-addr PLAINTEXT://redpanda:9092,OUTSIDE://localhost:19092
+    ports:
+      - "19092:19092"
+    profiles: ["kafka"]
+
+volumes:
+  dbdata:

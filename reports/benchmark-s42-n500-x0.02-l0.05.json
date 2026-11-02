@@ -1,0 +1,125 @@
+{
+  "run_id": "s42-n500-x0.02-l0.05",
+  "seed": 42,
+  "shipments": 500,
+  "readings": 10562566,
+  "ingest": {
+    "seconds": 151.5896508750011,
+    "readings_per_s": 69678.67488994851
+  },
+  "bytes": {
+    "raw": 1357455360,
+    "uniform_hourly": 5070848,
+    "excursion_aware": 81264640
+  },
+  "bytes_compressed": {
+    "raw": 121487360,
+    "uniform_hourly": 1802240,
+    "excursion_aware": 14155776
+  },
+  "ratio": {
+    "raw": 1.0,
+    "uniform_hourly": 0.003735554147430675,
+    "excursion_aware": 0.05986542349355783
+  },
+  "ratio_compressed": {
+    "raw": 1.0,
+    "uniform_hourly": 0.014834794335805798,
+    "excursion_aware": 0.11652056641942009
+  },
+  "recall": {
+    "ground_truth": 1216,
+    "excursion_aware": 1.0,
+    "excursion_aware_peak_mae": 0.0,
+    "raw": 1.0,
+    "raw_peak_mae": 0.0,
+    "uniform_hourly_mean": 0.30098684210526316,
+    "uniform_hourly_minmax": 1.0,
+    "uniform_hourly_peak_mae": 3.554134873967218,
+    "missed": []
+  },
+  "latency": {
+    "scenario1_hidden": {
+      "p50_ms": 13.469207999150967,
+      "p95_ms": 16.458500002045184,
+      "max_ms": 46.004083000298124,
+      "runs": 50
+    },
+    "scenario2_custody_list": {
+      "p50_ms": 7.226416999401408,
+      "p95_ms": 9.480500000790926,
+      "max_ms": 14.017917001183378,
+      "runs": 50
+    },
+    "scenario2_custody_detail": {
+      "p50_ms": 3.048479500648682,
+      "p95_ms": 4.1023749981832225,
+      "max_ms": 17.513624999992317,
+      "runs": 50
+    },
+    "scenario3_route_risk": {
+      "p50_ms": 6.220520999704604,
+      "p95_ms": 9.886957999697188,
+      "max_ms": 15.206083000521176,
+      "runs": 50
+    },
+    "trace_full_shipment": {
+      "p50_ms": 1.727833499899134,
+      "p95_ms": 2.5947079993784428,
+      "max_ms": 9.067167000466725,
+      "runs": 50
+    },
+    "trace_baseline": {
+      "p50_ms": 0.805875499281683,
+      "p95_ms": 0.9772920020623133,
+      "max_ms": 1.1272500014456455,
+      "runs": 50
+    },
+    "storage_audit": {
+      "p50_ms": 203.6557500014169,
+      "p95_ms": 259.64099999691825,
+      "max_ms": 640.5949170002714,
+      "runs": 50
+    },
+    "trace_raw_policy": {
+      "p50_ms": 29.48654149986396,
+      "p95_ms": 31.85450000091805,
+      "max_ms": 45.68320800171932,
+      "runs": 50
+    }
+  },
+  "late_data": {
+    "bound_s": 30,
+    "max_wait_s": 60,
+    "late_readings": 1042529,
+    "replays": 224,
+    "rewrites": 862,
+    "unreconstructable": 0
+  },
+  "tables": {
+    "readings_raw": 77856768,
+    "summary_windows": 2859008,
+    "baseline_hourly": 5070848,
+    "readings_rawstore": 1357455360,
+    "excursions": 548864,
+    "custody": 778240,
+    "rewrite_log": 278528,
+    "shipments": 147456,
+    "holders": 81920
+  },
+  "engine_config": {
+    "hi_exit_c": 7.5,
+    "lo_exit_c": 2.5,
+    "hi_enter_c": 8.0,
+    "lo_enter_c": 2.0,
+    "max_window_s": 21600,
+    "pre_buffer_s": 600,
+    "post_buffer_s": 600,
+    "min_excursion_s": 60,
+    "reconcile_delay_s": 30,
+    "staging_horizon_s": 43200,
+    "reconcile_max_wait_s": 60,
+    "close_on_custody_change": true
+  },
+  "recorded_at": "2026-11-02T09:04:07.370857+00:00"
+}
