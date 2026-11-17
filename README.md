@@ -12,8 +12,14 @@ trail records every rewrite caused by late-arriving data.
   evaluation plan, risks).
 - [Project-Report.pdf](Project-Report.pdf) — the project report: method, architecture, results, threats to validity.
 - [DEMO.md](DEMO.md) — what to show and say in the live demo, with fallbacks.
-- [reports/demo.mp4](reports/demo.mp4) — 3-minute narrated walkthrough of the dashboard (the five scenarios, in DEMO.md order).
+- [reports/demo-video.mp4](reports/demo-video.mp4) — 4½-minute narrated walkthrough of the dashboard (also embedded below).
 - `reports/` — benchmark tables and plots from the current dataset.
+
+## Demo video
+
+<video src="reports/demo-video.mp4" controls width="100%"></video>
+
+If the player does not load, open [reports/demo-video.mp4](reports/demo-video.mp4) directly.
 
 ## Run it in 10 minutes
 
