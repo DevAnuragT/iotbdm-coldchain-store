@@ -1,31 +1,31 @@
-import { api, fmtBytes, fmtDuration, fmtIsoDate, fmtNum, fmtPct, fmtRatio, fmtTemp } from "../api";
+import { api, fmtDuration, fmtIsoDate, fmtNum, fmtTemp } from "../api";
 import { useFetch } from "../hooks";
 import { Stat, State } from "../components/Common";
-import { StorageBars } from "../components/StorageBars";
 
+type RunConfig = null | {
+  sim?: { period_days?: number };
+  engine?: { pre_buffer_s?: number; post_buffer_s?: number };
+};
+
+/** Opening page: what the data is and why it needs a different storage policy.
+ *  The numbers for storage and recall live on their own pages. */
 export function Overview() {
   const ov = useFetch(() => api.overview(), []);
-  const hid = useFetch(() => api.hidden({ limit: 1 }), []);
   const d = ov.data;
-  const s = hid.data?.summary;
   const run = d?.run;
-  const cfg = (run?.config ?? null) as null | { sim?: { n_shipments?: number; period_days?: number; excursion_rate?: number; late_fraction?: number } };
+  const cfg = (run?.config ?? null) as RunConfig;
+  const mins = (s?: number) => (s ? fmtNum(s / 60) : "10");
+  const readings = d?.storage.tables.readings_rawstore?.rows ?? run?.readings ?? null;
 
   return (
     <div className="stack gap-lg">
       <div className="page-head">
         <div>
-          <h1>Overview</h1>
+          <h1>Excursion-aware cold-chain data store</h1>
           <div className="lede">
-            {run ? (
-              <>
-                Run <span className="mono">{run.run_id}</span> · seed {run.seed}
-                {cfg?.sim?.period_days ? ` · ${cfg.sim.period_days}-day simulation` : ""}
-                {d?.counts.period_start ? ` · ${fmtIsoDate(d.counts.period_start)} → ${fmtIsoDate(d.counts.period_end)}` : ""}
-              </>
-            ) : (
-              "Excursion-aware cold-chain data store"
-            )}
+            Vaccine shipments, factory to clinic, kept between 2 and 8 °C
+            {cfg?.sim?.period_days ? ` · ${cfg.sim.period_days}-day simulation` : ""}
+            {d?.counts.period_start ? ` · ${fmtIsoDate(d.counts.period_start)} → ${fmtIsoDate(d.counts.period_end)}` : ""}
           </div>
         </div>
       </div>
@@ -34,63 +34,35 @@ export function Overview() {
 
       {d && (
         <div className={ov.loading ? "is-stale" : ""}>
-          <div className="stats">
+          <div className="stats lead-wide">
+            <Stat hero label="Readings" value={fmtNum(readings)} note="one every 10 s per shipment" />
             <Stat label="Shipments" value={fmtNum(d.counts.shipments)} />
-            <Stat label="Excursions" value={fmtNum(d.counts.excursions)} note={`${d.excursions.hot} hot · ${d.excursions.cold} cold`} />
+            <Stat label="Excursions" value={fmtNum(d.counts.excursions)} note={`${fmtNum(d.excursions.hot)} hot · ${fmtNum(d.excursions.cold)} cold`} />
             <Stat label="Time out of range" value={fmtDuration(d.excursions.total_s)} note={`longest ${fmtDuration(d.excursions.longest_s)}`} />
             <Stat label="Hottest / coldest" value={<>{fmtTemp(d.excursions.hottest)}<small>/ {fmtTemp(d.excursions.coldest)}</small></>} />
-            <Stat label="Summary windows" value={fmtNum(d.counts.windows)} />
-            <Stat label="Raw readings kept" value={fmtNum(d.counts.raw_rows)} note="around excursions only" />
-            <Stat label="Rewrites" value={fmtNum(d.counts.rewrites)} note="late data reopened a window" />
-            <Stat label="Holders" value={fmtNum(d.counts.holders)} />
           </div>
         </div>
       )}
 
-      {d && (
-        <div className="split even">
-          <div className="panel">
-            <div className="panel-head"><h2>Storage per policy</h2><span className="small muted">whole dataset · {fmtNum(d.storage.tables.readings_rawstore?.rows ?? 0)} raw readings</span></div>
-            <div className="panel-body stack">
-              <div className="stats">
-                <Stat hero label="Excursion-aware store, share of raw" value={fmtPct(d.storage.ratio.excursion_aware)} note={`${fmtRatio(d.storage.ratio.excursion_aware)} · target ≤ 10 %`} />
-                <Stat label="Uniform hourly, share of raw" value={fmtPct(d.storage.ratio.uniform_hourly, 2)} note="cheap, but lossy" />
-              </div>
-              <StorageBars
-                bars={[
-                  { key: "raw", label: "Raw (everything)", bytes: d.storage.policies.raw },
-                  { key: "uniform_hourly", label: "Uniform hourly", bytes: d.storage.policies.uniform_hourly },
-                  { key: "excursion_aware", label: "Excursion-aware", bytes: d.storage.policies.excursion_aware, ours: true },
-                ]}
-              />
-              <p className="small muted">Audit trail (rewrite log) adds {fmtBytes(d.storage.policies.audit_trail)}. <a href="#/storage">Storage audit</a></p>
-            </div>
-          </div>
-
-          <div className="panel">
-            <div className="panel-head"><h2>Excursion recall per policy</h2><span className="small muted">excursions ≥ 60 s</span></div>
-            <div className="panel-body stack">
-              <State loading={hid.loading && !s} error={hid.error} />
-              {s && (
-                <>
-                  <div className="stats">
-                    <Stat hero label="Hidden from the hourly store" value={fmtNum(s.hidden)} unit={`of ${fmtNum(s.total)}`} note={`${fmtNum(s.hidden_shipments)} shipments look safe hour by hour`} />
-                  </div>
-                  <table className="kv">
-                    <tbody>
-                      <tr><td>Excursion-aware (ours)</td><td className="num"><b>100 %</b> <span className="muted">kept at full resolution by construction</span></td></tr>
-                      <tr><td>Raw (everything)</td><td className="num"><b>100 %</b></td></tr>
-                      <tr><td>Uniform hourly, mean out of range</td><td className="num"><b>{fmtPct(s.baseline_mean_recall)}</b></td></tr>
-                      <tr><td>Uniform hourly, min/max out of range</td><td className="num"><b>{fmtPct(s.baseline_minmax_recall)}</b> <span className="muted">no duration, no peak timing</span></td></tr>
-                    </tbody>
-                  </table>
-                  <p className="small muted"><a href="#/hidden">Hidden excursions</a> lists them with the full-resolution trace.</p>
-                </>
-              )}
-            </div>
-          </div>
+      <div className="split even">
+        <div className="prose">
+          <h3>The problem</h3>
+          <p>
+            Almost every reading says “still fine”. Keeping all of them grows forever. Keeping one average per hour
+            is cheap, but a spike to 11 °C disappears into its hour and reads as safe. The evidence a regulator asks
+            for months later is gone.
+          </p>
         </div>
-      )}
+        <div className="prose">
+          <h3>The idea</h3>
+          <p>
+            What is kept depends on what happened, not on the clock. Steady stretches collapse into summary windows.
+            Every reading from {mins(cfg?.engine?.pre_buffer_s)} minutes before an excursion to{" "}
+            {mins(cfg?.engine?.post_buffer_s)} minutes after it stays at full resolution, so nothing about a breach
+            is lost.
+          </p>
+        </div>
+      </div>
 
       <div>
         <h3 className="mb">Demo scenarios</h3>

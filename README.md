@@ -10,6 +10,7 @@ trail records every rewrite caused by late-arriving data.
 
 - [PRD.md](PRD.md) — what we are building and why (requirements F1–F15, N1–N7,
   evaluation plan, risks).
+- [Project-Report.pdf](Project-Report.pdf) — the project report: method, architecture, results, threats to validity.
 - [DEMO.md](DEMO.md) — what to show and say in the live demo, with fallbacks.
 - [reports/demo.mp4](reports/demo.mp4) — 3-minute narrated walkthrough of the dashboard (the five scenarios, in DEMO.md order).
 - `reports/` — benchmark tables and plots from the current dataset.

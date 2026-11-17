@@ -291,6 +291,8 @@ table.kv td { padding: 4px 0; border: 0; white-space: normal; }
 .chips button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent-ink); background: var(--accent-bg); }
 
 /* scenario list on the overview */
+.stats.lead-wide > :first-child { grid-column: span 2; }
+.prose p { margin: 6px 0 0; max-width: 58ch; color: var(--text-2); line-height: 1.55; }
 .scenarios { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
 .scenarios a { display: block; padding: 12px 14px; border: 1px solid var(--border); border-radius: 6px; color: inherit; background: var(--surface); }
 .scenarios a:hover { text-decoration: none; border-color: var(--border-2); background: var(--surface-2); }
