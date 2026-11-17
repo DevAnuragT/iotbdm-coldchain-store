@@ -17,10 +17,10 @@ trail records every rewrite caused by late-arriving data.
 
 ## Demo video
 
-[![Demo video: a 4½-minute walkthrough of the dashboard](reports/demo-video-thumb.jpg)](reports/demo-video.mp4)
+https://github.com/user-attachments/assets/e2a83b7d-124a-421a-b0dc-11af23f951f6
 
-Click the picture to play the narrated walkthrough (4½ minutes). GitHub does not
-play videos inside a README, so the link opens the file's own page, which does.
+4½-minute narrated walkthrough of the dashboard. If the player does not load,
+open [reports/demo-video.mp4](reports/demo-video.mp4) directly.
 
 ## Run it in 10 minutes
 
